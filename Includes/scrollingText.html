@@ -1,0 +1,176 @@
+<style>
+  .hidden {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+  }
+
+  #scroll-text-wrapper {
+    position: relative;
+    height: 500vh;
+    color: #cdd6f4; /* Use body text color */
+    font-family: system-ui, sans-serif;
+  }
+
+  #scroll-text-sticky {
+    position: sticky;
+    top: 35vh;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    transition: opacity 0.5s ease;
+  }
+
+  .entry-top {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+
+  .entry-comment {
+    font-size: 1.1rem;
+    font-weight: 400;
+    margin-top: 0.5rem;
+    line-height: 1.5;
+  }
+
+  .fade-out {
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+
+  @media (max-width: 600px) {
+    .entry-top {
+      flex-direction: column;
+      gap: 0.3rem;
+      font-size: 1.3rem;
+    }
+
+    .entry-comment {
+      font-size: 1rem;
+    }
+  }
+</style>
+
+<div id="scroll-text-wrapper">
+  <div id="scroll-text-sticky">
+    <div id="scroll-text-content" class="entry"></div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const items = [
+      {
+        year: "2012",
+        position: "Student",
+        comment: "The spark started here with rooting Android phones and flashing custom ROMs via terminal. A hands-on intro to systems thinking."
+      },
+      {
+        year: "2017",
+        position: "QA Tester, Electronic Arts",
+        comment: "No IDEs yet, but I learned how to break things effectively. Began understanding software structure by testing its limits."
+      },
+      {
+        year: "2020",
+        position: "Lead DevQA Tester, Testronic",
+        comment: "Gained deep exposure to pipelines, build systems, and mobile architecture. Worked closely with developers in a hybrid QA/DevOps space."
+      },
+      {
+        year: "2021",
+        position: "QA Engineer, CST",
+        comment: "Embedded alongside senior frontend and mobile devs. Absorbed Swift concepts and development practices in a production setting."
+      },
+      {
+        year: "2024",
+        position: "Jr. iOS Developer, EndPrize Solutions",
+        comment: "Transitioned into development - migrating UIKit views to SwiftUI and contributing to app architecture in a team setting."
+      },
+      {
+        year: "Present",
+        position: "You're Here",
+        comment: "You found this site, so clearly you're curious. Let’s talk."
+      }
+    ];
+
+    const wrapper = document.getElementById("scroll-text-wrapper");
+    const sticky = document.getElementById("scroll-text-sticky");
+    const content = document.getElementById("scroll-text-content");
+
+    let currentIndex = -1;
+    let isAnimating = false;
+    let isHidden = false;
+
+    function getScrollProgress() {
+      const rect = wrapper.getBoundingClientRect();
+      const scrollStart = -rect.top;
+      const total = wrapper.scrollHeight - window.innerHeight;
+      return Math.min(Math.max(scrollStart / total, 0), 1);
+    }
+
+    function getScrollIndex() {
+      const progress = getScrollProgress();
+      const sectionSize = 1 / items.length;
+      const index = Math.floor(progress / sectionSize);
+      return Math.min(index, items.length - 1);
+    }
+
+    function updateContent(index) {
+      const item = items[index];
+      const html = `
+        <div class="entry-top">
+          <div class="entry-year">${item.year}</div>
+          <div class="entry-position">${item.position}</div>
+        </div>
+        <div class="entry-comment">${item.comment}</div>
+      `;
+      content.innerHTML = html;
+    }
+
+    function updateText() {
+      const progress = getScrollProgress();
+      const idx = getScrollIndex();
+
+      const hideThreshold = 1.02;
+
+      if (progress >= hideThreshold && !isHidden) {
+        sticky.classList.add("hidden");
+        isHidden = true;
+        return;
+      }
+
+      if (progress < hideThreshold && isHidden) {
+        sticky.classList.remove("hidden");
+        isHidden = false;
+      }
+
+      if (idx !== currentIndex && !isAnimating && !isHidden) {
+        isAnimating = true;
+        content.classList.add("fade-out");
+
+        setTimeout(() => {
+          updateContent(idx);
+          content.classList.remove("fade-out");
+
+          setTimeout(() => {
+            isAnimating = false;
+            const newIdx = getScrollIndex();
+            if (newIdx !== idx) updateText();
+          }, 500);
+        }, 500);
+
+        currentIndex = idx;
+      }
+    }
+
+    window.addEventListener("scroll", updateText);
+    updateText(); // initial render
+  });
+</script>
