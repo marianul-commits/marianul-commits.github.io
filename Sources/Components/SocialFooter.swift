@@ -12,13 +12,15 @@ struct SocialFooter: HTML {
     let icons = [
         Image(systemName: "github"),
         Image(systemName: "linkedin"),
-        Image(systemName: "envelope")
+        Image(systemName: "envelope"),
+        Image(systemName: "file-earmark-pdf-fill")
     ]
 
     let urlStrings = [
         "https://github.com/marianul-commits",
         "https://www.linkedin.com/in/nasturicamarian/",
-        "mailto:mvnasturica@gmail.com"
+        "mailto:mvnasturica@gmail.com",
+        "/CV.pdf"
     ]
 
     var body: some HTML {

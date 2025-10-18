@@ -24,4 +24,7 @@ struct ExampleSite: Site {
     var homePage = Home()
     var layout = MainLayout()
     var theme = MyTheme()
+    var staticPages: [any StaticPage] {
+        CV()
+    }
 }
